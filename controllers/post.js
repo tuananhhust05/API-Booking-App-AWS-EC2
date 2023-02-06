@@ -3,7 +3,7 @@ import Post from "../models/Post.js";
 import Hotel from "../models/Hotel.js";
 import axios from 'axios'
 import fs from 'fs'
-let domain ="http://127.0.0.1:8800";
+let domain ="https://api-booking-app-aws-ec2.onrender.com";
 const ConvertToArrayString  = (string) =>{
     try{
        let StringArray = String(string).replace("[","").replace("]","");

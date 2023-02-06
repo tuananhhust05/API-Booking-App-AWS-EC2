@@ -4,8 +4,8 @@ import Order from "../models/Order.js";
 import fs from "fs"
 import { createError } from "../utils/error.js";
 import RoomCreateRequest from "../models/RoomCreateRequest.js";
-let domain ="http://127.0.0.1:8800";
-let domainCheck="//127.0.0.1"
+let domain ="https://api-booking-app-aws-ec2.onrender.com";
+let domainCheck="//api-booking-app-aws-ec2.onrender.com"
 // tạo phòng cho 1 khách sạn 
 export const createRoom = async (req, res, next) => {
   const hotelId = req.params.hotelid;

@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import Order from "../models/Order.js"; 
 import CityData from "../models/CityData.js";
 import HistorySearch from "../models/HistorySearch.js"; 
-let domain ="http://127.0.0.1:8800";
+let domain ="https://api-booking-app-aws-ec2.onrender.com";
 import fs from 'fs'
 import jwt from "jsonwebtoken";
 import {tokenPassword} from '../utils/checkToken.js'

@@ -5,8 +5,8 @@ import CityData from "../models/CityData.js";
 import Order from "../models/Order.js";
 import fs from 'fs'
 import { getLinkPreview } from "link-preview-js";
-let domain ="http://127.0.0.1:8800";
-let domainCheck="//127.0.0.1"
+let domain ="https://api-booking-app-aws-ec2.onrender.com";
+let domainCheck="//api-booking-app-aws-ec2.onrender.com"
 
 // tạo khách sạn 
 export const createHotel = async (req, res, next) => {
