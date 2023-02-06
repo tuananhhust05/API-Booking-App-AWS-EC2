@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <title>Travel Community</title>
+  </head>
+  <body>
+    
+    <div id="root"> </div>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+*{ /* toàn bộ*/
+    margin:0;
+    padding:0;
+    outline:none;
+    box-sizing: border-box;
+    
+}
+/*background dùng xuyên suốt => đặt biến=> cần dùng thì lôi ra */
+:root{
+    --main-color:#191F3A;
+    --sub-color:#EAA023;
+    --text-color:white;
+    --bg-color:#0a0f21;
+}
+.justify-content{
+   justify-content: space-between;  /*giúp header phần logo và chữ mỗi cái sang 1 bên*/
+   /*phần này dùng css cho các thằng row nối class vào row*/
+}
+
+/*Khai báo chung btn cho cả trang*/
+.btn{
+    background-color: transparent;
+    padding:15px 30px;
+    border: 2px solid var(--sub-color);
+    border-radius: 50px;
+    color: var(--sub-color);
+    transition:all 0.5s; /* điều chỉnh tốc độ thay đổi thuộc tính khi hover*/
+}
+.btn:hover{
+   background-color: white;
+}
+
+
+/*header*/
+ul{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+.section-padding{
+    padding: 80px 80px;
+}
+.container{
+    margin:auto;
+}
+/*row cả container dùng xuyên suốt cho các section sau*/
+.row{
+    display: flex;/* cùng hàng*/
+    flex-wrap:wrap;
+    overflow: hidden;
+}
+
+/*css kỹ hiệu ứng header ban đầu hiện trong xuốt khi csroll xuống thì nó hiển thị màu với main color*/
+.top{
+    background-color:transparent; /*css màu trong suốt*/
+    width:100vw;
+    position:fixed;
+    z-index: 99;/*set để thằng này luôn hiện lên */
+    overflow: hidden;
+}
+.top::before{  /*thằng before của thằng top thì ăn theo thằng top*/
+    content:"";
+    position:absolute;
+    width:100%;
+    height:170%;
+    background-color: var(--main-color);
+    z-index:-1;
+    transform: translateY(-100%) /*css đẩy nền đen này lên trên*/
+}
+/* js bắt dự kiện cuộn và đưa thằng top vào trạng thái active*/ 
+/* khi active thì thằng before sẽ di chuyển*/
+.top.active::before{ 
+    transform:translateY(100%);
+    margin-top:-150px;  /*căn dịch lên để nó nằm dưới thằng header cũ*/
+}
+
+
+.top .logo h2{  /*ảnh logo*/
+   margin:15px;
+}
+.top .menu-bar{  /*cho 1 phần tử span bên trong menu-bar ra giứã theo trục ngang*/
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    position: relative;
+    right: 5%;
+}
+.top .menu-bar span{
+    display:block; /*xuống dòng*/
+    height:2px;
+    width:50px;
+    background-color: var(--sub-color);
+    position:relative;/*nomal*/
+    cursor:pointer;
+   
+}
+
+
+/*tạo phím chuyển đổi*/
+/*xong sang phần js*/
+/*tư duy; thanh bên trên quay 45 độ; thanh bên dưới quay 45 độ; thanh ở giữa sẽ biến mất*/
+.top .menu-bar.active span{
+   background-color: transparent; /*set màu trong suốt*/
+}
+
+.top .menu-bar.active span::before{ 
+    transform:rotate(-135deg); /*quay -45 độ*/
+}
+
+.top .menu-bar.active span::after{ 
+    transform:rotate(135deg); /*quay 45 độ*/
+}
+/*active phần đóng mở menu items*/
+.top .menu-bar.active{
+    position:fixed;
+    top:30px;
+    right:0;
+    z-index:1; /*giúp menu bar nằm ở trên và không bị biến mất */
+    transform:translateX(-200px); /*dịch chuyển theo chiều âm trục x; dịch vào trong*/
+    transition:all 0.3s ease; /*điều chỉnh tốc độ*/
+}
+
+/*tạo ký tự 3 gạch menubar*/
+.top .menu-bar span::before{ /* bổ sung vào sau thẻ span*/
+    height:100%;
+    width:100%;  /*ăn theo thằng thẻ cha span*/
+    content:"";
+    display:block;
+    position:absolute;
+    transform:translateY(-10px); /*dịch chuyển theo chiều y*/
+    background-color: var(--sub-color);
+    /*set thời gian chuyển đổi thuộc tính*/
+    transition:all 0.3s ease;
+}
+.top .menu-bar span::after{ /* bổ sung vào sau thẻ span*/
+    height:100%;
+    width:100%;  /*ăn theo thằng thẻ cha span*/
+    content:"";
+    display:block;
+    position:absolute;
+    transform:translateY(10px); /*dịch chuyển theo chiều y*/
+    background-color: var(--sub-color);
+    /*set thời gian chuyển đổi thuộc tính*/
+    transition:all 0.3s ease;
+}
+
+
+/*Phần menu trên header*/
+.menu-items{ /* css cho  thằng con của top; nhớ là phải có quan hệ cha con */
+   position: fixed;
+   width:250px;
+   height:100 vh;
+   background-color: var(--main-color);
+   right:0;
+   top:0;
+   padding:100px 50px;
+   transform:translateX(100%); /* để phần menu bị ẩn hoàn toàn*/
+}
+.menu-items.active{  /*muốn hoạt động được thì cần phải viết liền*/
+   transform:translateX(0%); /*khi thêm active thì transform là 0*/
+   transition:all 0.3s ease; /*điều chỉnh tốc độ*/
+}
+.menu-items a{
+    color: var(--text-color);
+    line-height: 40px;
+    font-size:25px;
+}
+
+
+
+
+/*image slider*/
+/*blg-image*/
+.blg-image{
+    display:flex;   /*dùng flexbox để căn giữa*/
+    justify-content: center;
+    align-items: center;
+    width:100vw;
+    height:100vh;
+    overflow: hidden;
+    position:relative; /*set như vậy để có thể chèn*/
+}
+.blg-image::before{  /*thầng ảnh*/
+   content:"";
+   display:block;
+   width:100%;
+   height:100%;
+   background-image: url("https://cdn.pixabay.com/photo/2017/03/05/00/34/panorama-2117310__340.jpg");
+   position: absolute; /*để bao trùm tất cả*/
+   left:0%;
+   z-index:-2;  /*giúp chũ bị che bởi position: fixed hiện chữ lên*/
+   padding:50px; 
+   overflow:hidden;
+   /*Tạo chuyển động*/
+   animation: Inout 5s infinite;/*Chuyển động liên tục*/
+} 
+   /*tạo 1 biến và set keyframes*/
+@keyframes Inout{
+    0%,100%{  /*Thời điểm đầu, cuối*/
+        transform: scale(1)
+    }
+    50%{   /*Khúc giữa của chuyển động khoảng 2.5S*/
+        transform:scale(1.1)
+    }
+}
+
+/*Làm phần bao trùm*/
+.blg-image::after{
+    content:"";
+    display:block;
+    width:100%;
+    height:100%;
+    background-color: black;
+    position:fixed;
+    left:0%;
+    opacity:0.3;
+    z-index:-2;
+    padding:50px; /*để đối tượng tràn toàn màn hình*/
+}
+.blg-image .blg-image-content{
+    text-align:center;
+    max-width:560px;
+}
+.blg-image .blg-image-content h2{
+    font-size:50px;
+    color: var(--text-color);
+    font-family:'Dancing Script'
+}
+.blg-image .blg-image-content p{
+    font-size:25px;
+    color: var(--text-color);
+    font-weight:bold;
+    margin:15px 0;
+}
+
+
+
+/*about*/
+.about{
+    background-color: var(--main-color);
+    overflow:hidden;
+    width:101%;
+    margin-top:-60px;
+}
+.about .section-title{
+    width:100%;
+    text-align:center;
+}
+.about .about-item img {
+    width:100%;
+}
+.section-title{
+    width:100%;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.section-title h2{
+    font-size:40px;
+    color:var(--text-color);
+    text-transform:uppercase;
+}
+.section-title h2::before{
+    content: attr(data-title); /*data lấy từ fe*/
+    display:block;
+    color:var(--sub-color);
+    font-size:30px;
+    font-family:'Dancing Script';
+}
+/*Đoạn văn*/
+.about .about-item h2{
+    color:var(--text-color);
+    font-size:35px;
+}
+.about .about-item p{
+    font-size: 18px;
+    margin: 15px 0;
+    color:var(--text-color);
+    font-weight:300;
+}
+.about .about-item img{
+    width:100%;
+    height:400px;
+    border-radius:20px;
+}
+.about-item{
+    width:50%;
+    padding:15px;
+}
+.about-item-img{
+    position:relative;
+}
+.about-item-img img{
+    display:block;
+}
+.about-item-img span{
+    position:absolute;
+    width:50%;
+    top:50%; /*Vị trí phụ thuộc thằng cha chứa nó*/
+    left:50%;
+    color:var(--main-color);
+    font-family: 'Dancing Script';
+    font-size: 35px;
+    font-weight: bold;
+    transform: translate(-50%,-50%) /*Chưa hiểu thằng này để làm gì*/
+}
+.about-item-img .div_rotate{ /*Tạo ra element liền trước set trong cùng 1 thằng cha*/
+    content:"";
+    display:block;
+    width:100px;
+    height:100px;
+    border: 3px solid var(--sub-color);
+    position:absolute;
+    /*Dùng để căn chỉnh*/
+    left:40%;
+    top:37%;
+    animation: xoayVong 5s infinite;
+}
+@keyframes xoayVong{  /*Cài keyframe cho thằng animation*/
+    0% {transform: rotate(0deg);}
+    100%{transform:rotate(360deg)}
+}
+
+
+/*menu*/
+.menu{
+    position:relative;
+    top:30px;
+    background-color:var(--bg-color);
+}
+.menu-title{
+    width:100%;
+    text-align:center;
+}
+.menu-title .menu-button{
+    background-color:transparent;
+    margin: 10px 12px;
+    border:none;
+    font-size: 20px;
+    color:var(--text-color);
+    cursor:pointer;
+}
+.menu-title .menu-button:hover{
+    color:var(--sub-color)
+}
+/*logic => click đến loại nào thì loại đó chuyển màu => khách hàng chọn loại thức ăn nào thì nó đưa ra danh sách của loại đấy*/
+.menu-title .menu-button.active{
+    color:var(--sub-color)
+}
+/*Khi bạn di chuột đến thằng cha, thằng con của bạn sẽ được hover*/
+.food-items:hover .food-price p{
+    color:var(--sub-color)
+}
+/*khi 1 row quá tải nó sẽ đẩy dữ liẹu xuống dòng*/
+.food-items{
+    width:50%;
+    justify-content:space-between;
+    display:flex;
+    align-items:center;  /*Giúp các element con ra giữa*/
+    padding:20px 15px;
+    position:relative;
+}
+.food-items::before{
+    content:"";
+    display:block;
+    position:absolute;
+    left:15px;
+    right:15px; /*Thằng này giúp không cần config thằng width nữa*/
+    bottom:0;
+    border: 1px dashed var(--main-color);
+    
+}
+.food-item{
+    display:flex;
+    align-items:center;
+}
+.food-item img{
+    width:250px;
+    height:250px;
+    margin-right:25px; /*méo r*/
+}
+.food-item p{
+    color: var(--text-color);
+    font-size: 20px;
+    transition:all 0.6s ease-in; /*tạo hiệu ứng di chuyển=> Không hiệu quả lắm*/
+}
+.food-price p{
+    color: var(--text-color);
+    transition:all 0.6s ease-in;
+    font-size: 20px;
+}
+
+/*Cài thăng menu-item-content giống rows*/
+.menu-item-content{  /*Đầu tiên set tất cả các danh sách là none*/
+    display:none;
+    flex-wrap:wrap;
+    overflow: hidden;
+}
+.menu-item-content.active{
+    display:flex;
+}
+
+
+
+/*Phản hồi*/
+.phan-hoi{
+    background-color:var(--main-color);
+}
+.phan-hoi-items{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+    overflow:hidden;
+}
+.phan-hoi-item{
+    width:30%;
+    display:inline-block;
+    border: 1px solid var(--bg-color);
+    padding:15px;
+    border-radius: 2px;
+    box-shadow: 0,0,0,15px rgbs(0,0,0,0.7)
+}
+/*logic => click thằng cha, hover thằng con*/
+.phan-hoi-item:hover img{
+    border: 4px solid var(--sub-color);
+}
+.phan-hoi-item span{
+    color:white;
+   
+}
+.phan-hoi-item p{
+    color:white;
+    font-size: 20px;
+    margin:20px 0;
+}
+.phan-hoi-item h2{
+    font-size: 20px;
+    color:white;
+}
+
+.phan-hoi-item img{
+    width:150px;
+    height:200px;
+    border-radius: 50%;
+    border: 2px solid var(--sub-color);
+    transition:all 0.3s ease; /*Cài đặt việc chuyển đổi chậm hơn khi hover*/
+}
+.phan-hoi-item-content{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+}
+
+
+/*team*/
+.team{
+    background-color: var(--bg-color);
+}
+.team-items{
+    padding:15px;
+    width:calc(100%/3);
+    position:relative;
+}
+.team-items img{
+    height:95%;
+    width:100%;
+    border-radius:10px;
+}
+.team-items-text {
+    position:absolute;
+    padding:20px 0;
+    right:15px;
+    left:5%;
+    bottom:0;
+    width:90%;
+    background-color: var(--main-color);
+    text-align:center;
+    border-radius:10px;
+    
+}
+.team-items-text h2{
+    color: var(--text-color)
+}
+.team-items-text span{
+    color:var(--text-color)
+}
+.team-items img:hover{
+    transform:skewX(2deg);
+}
+.team-items-text:hover{
+    background-color: var(--sub-color);
+    cursor:pointer;
+    transform:translateY(-50px); 
+    transition:all 0.3s ease-in;
+}
+
+
+/*footer*/
+.img_background_footer{
+    z-index: -1;
+    position:absolute;
+    margin-top:-340px;
+    width:100%;
+    height:350px;
+}
+.footer-item{
+    color:white;
+    width:calc(100%/3);
+}
+.footer-item .text{
+    margin:60px 40px;
+    text-align:center;
+}
+.footer-item .text h2{
+    margin:20px 0;
+}
+.footer-item .text p{
+    margin:10px 0;
+}
+.footer .container .title{
+    color:white;
+    margin:0% 10%;
+}
+@media(max-width:913px){
+    /*Phần phản hồi*/
+   .phan-hoi-items{
+    display:block;
+   }
+   .phan-hoi-item{
+    display:block;
+    width: 100%;
+    padding: 20px;
+   }
+}
+@media(max-width:821px){
+    /*Phần team*/
+    .team .row{
+        display:block;
+    }
+    .team-items{
+        width:100%;
+    }
+}
+@media(max-width:769px){
+    .menu-item-content.active{ /*Khi hoạt động thì block*/
+        display:block;
+       }
+    .food-items{
+        width:105%;
+       }
+    .food-items .food-price{
+        padding:0 2%;
+       }
+}
+@media(max-width:541px){
+    /*Phân about*/
+   .about .row {
+    display:block;
+   }
+   .about-item h2{
+    text-align: center;
+    width:220%;
+   }
+   .about-item p{
+    width:220%;
+   }
+   .about-item .btn{
+    width:220%;
+   }
+   .about-item .about-item-img{
+    width:220%;
+   }
+
+   /*Phần thực đơn*/
+   .menu-item-content.active{ /*Khi hoạt động thì block*/
+    display:block;
+   }
+   .food-items{
+    width:105%;
+   }
+   .food-items .food-price{
+    padding:0 2%;
+   }
+
+   /*Phần footer*/
+   .footer img{
+    margin-top:-370px;
+   }
+}
+@media(max-width:415px){
+    /*Phần about*/
+    .about .about-item h2{
+        font-size: 25px;
+    }
+
+    /*Phần thực đon*/
+    .food-items{
+        display:block;
+    }
+    .food-items .food-price{
+        padding:3px 0;
+    }
+
+    /*Phần team*/
+    .team-items{
+        width:120%;
+    }
+    .team-items-text{
+        padding:10px;
+    }
+    .team-items-text h2{
+        font-size: 20px;
+    }
+ }
+ @media(max-width:395px){
+    .phan-hoi-item img {
+        width: 120px;
+        height: 150px;
+    }
+ }
+   
+
+ @media(max-width:376px){
+    /*Phân about*/
+  
+   .about-item h2{
+  
+    width:250%;
+   }
+   .about-item p{
+    width:250%;
+   }
+   .about-item .btn{
+    width:250%;
+   }
+   .about-item .about-item-img{
+    width:250%;
+   }
+
+   /*Phần thực đơn*/
+   .food-item img{
+    width:120px;
+   }
+   /*Phần phản hối*/
+   .phan-hoi-item img {
+        width: 90px;
+        height: 120px;
+    }
+    /*Phần footer*/
+    .footer img{
+    margin-top:-390px;
+    height:400px;
+   }
+}
+
+@media(max-width:281px){
+    .blg-image .blg-image-content p{
+        font-size: 15px;
+    }
+    .blg-image .blg-image-content h2{
+        font-size: 25px;
+    }
+}
+
+    </style>
+
+      <!--header-->
+      <section class="top"style="overflow: hidden;">
+        <div class="container">
+            <div class="row justify-content">
+                <div class="logo"><h2 style ="font-size:25px;font-family:'Dancing Script';color:#EAA023">Travel Community</h2></div>
+                <div class="menu-bar">
+                    <span></span>
+                </div>
+                <!--menu-item-->
+                <div class="menu-items">
+                    <ul>
+                        <li class="menu-item"><a href="http://43.239.223.157:3000/">Trang chủ</a></li>
+                        <li class="menu-item"><a href="">Về chúng tôi</a></li>
+                        <li class="menu-item"><a href="">Thực đơn</a></li>
+                        <li class="menu-item"><a href="">Phản hồi</a></li>
+                        <li class="menu-item"><a href="">Đội ngũ</a></li>
+                        <li class="menu-item"><a href="">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <!--slider-->
+    <section class="blg-image">
+        <div class="blg-image-content"style="overflow: hidden;">
+            <h2>Travel Community</h2>
+            <!--Thêm 1 thằng btn để config chung cho cacr page-->
+            <button class="blg-image-content-btn btn ">Menu</button>
+        </div>
+    </section>
+    
+    <!--about-->
+    <section class="about section-padding"style="position:relative;top:40px;overflow: hidden;">
+        <div class="container">
+            <div class="row">
+                <div class="section-title">
+                   <h2 data-title="Câu chuyện">Về chúng tôi</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                    <div class="about-item"data-aos="fade-right">
+                       <h2>CHÀO MỪNG CÁC BẠN ĐẾN VỚI Travel Community</h2>
+                       <p>Một mạng xã hội dành riêng cho niềm đam mê du lịch của bạn.Nơi bạn có thể tìm kiếm những thông tin thú vị, hấp dẫn về các địa điểm, loại hình, dịch vụ du lịch trong nước và quốc tế. Tại đây các bạn có thể gặp gỡ giao lưu với những người bạn có chung đam mê, sở thích khám phá. Nơi các bạn có thể tiếp cận được với những nguồn tin uy tín chính xác và chân thực nhất từ chính những trải nghiệm thực tế của bạn bè và những thông tin được kiểm duyệt chặt chẽ từ hệ thống của chúng tôi. Tại đây các bạn còn có cơ hội được giao lưu kết bạn với bạn bè từ khắp nơi nơi. Với tất cả tâm huyết, chúng tôi sẽ luôn đưa đến các bạn những gợi ý tốt nhất phù hợp nhất, tiện lợi nhất dành cho các bạn dựa trên thói quen, sở thích cũng như ý nguyện của các quý khách hàng. Hãy đến với chúng tôi các bạn sẽ có được những trải nghiệm tốt nhất ! </p>
+                       <button class="btn">
+                           KHÁM PHÁ
+                       </button>
+                    </div>
+                    <div class="about-item"data-aos="fade-left">
+                        
+                        <div class="about-item-img">
+                           
+                            <img  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSei6cDCVkm4ZHK7YJFXsA5sva78lbFzjz6vxytXoJHHLp_uYOFNkIMDkaxr0PyWQlabJ4&usqp=CAU"/>
+                            <span>10 year experience</span>
+                            <div class="div_rotate">
+
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </section>
+
+    <!--menu-->
+    <section class="menu section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="section-title">
+                    <h2 data-title="Đặt phòng ngay"></h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="menu-title">
+                    <button data-title="trua" class="menu-button active">Nghỉ Dưỡng</button>
+                    <button data-title="chieu"class="menu-button">Phiêu lưu</button>
+                    <button data-title="do_uong"class="menu-button">Du lịch thám Hiểm</button>
+                    <button data-title="diem_tam"class="menu-button">Khám Phá</button>
+                </div>
+            </div>
+            <div class="row justify-content">
+                <!--quy tắc đặt tên để trong js để tiện gọi class hay id-->
+                <div class="menu-item-content active"id="trua">
+                    <div class="food-items">
+                        <div class="food-item"data-aos="fade-up">
+                            <img src="https://images.pexels.com/photos/2245436/pexels-photo-2245436.png?auto=compress&cs=tinysrgb&w=600" alt="">
+                        </div>
+                    </div>
+                    <div class="food-items">
+                        <div class="food-item"data-aos="fade-up">
+                            <img src="https://images.pexels.com/photos/2325446/pexels-photo-2325446.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                        </div>
+                    </div>
+                    <div class="food-items">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/507410/pexels-photo-507410.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                        </div>
+                
+                    </div>
+                    <div class="food-items">
+                        <div class="food-item"data-aos="fade-up">
+                            <img src="https://images.pexels.com/photos/2356045/pexels-photo-2356045.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                            
+                        </div>
+                       
+                    </div>
+                    <div class="food-items">
+                        <div class="food-item"data-aos="fade-up">
+                            <img src="https://images.pexels.com/photos/2901209/pexels-photo-2901209.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                           
+                        </div>
+                       
+                    </div>
+                    <div class="food-items">
+                        <div class="food-item"data-aos="fade-up">
+                            <img src="https://images.pexels.com/photos/3757144/pexels-photo-3757144.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                           
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="menu-item-content"id="do_uong">
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/6416555/pexels-photo-6416555.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                            
+                        </div>
+                       
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/4825701/pexels-photo-4825701.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                           
+                        </div>
+                       
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/3369102/pexels-photo-3369102.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                            
+                        </div>
+                      
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/3889843/pexels-photo-3889843.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                           
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="menu-item-content"id="chieu">
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://image.shutterstock.com/image-photo/new-cooked-peppered-chicken-wings-600w-1400678804.jpg" alt="">
+                           
+                        </div>
+                   
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/3214958/pexels-photo-3214958.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                           
+                        </div>
+                    
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/3225528/pexels-photo-3225528.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                           
+                        </div>
+                       
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/4254555/pexels-photo-4254555.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                          
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="menu-item-content"id="diem_tam">
+                    <div class="food-items">
+                        <div class="food-item"data-aos="fade-up">
+                            <img src="https://images.pexels.com/photos/2440009/pexels-photo-2440009.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                            
+                        </div>
+                      
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/2792025/pexels-photo-2792025.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                          
+                        </div>
+                        
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/6039184/pexels-photo-6039184.jpeg?auto=compress&cs=tinysrgb&w=600" alt="">
+                          
+                        </div>
+                       
+                    </div>
+                    <div class="food-items"data-aos="fade-up">
+                        <div class="food-item">
+                            <img src="https://images.pexels.com/photos/842571/pexels-photo-842571.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=699.825&fit=crop&h=1133.05" alt="">
+                          
+                        </div>
+                       
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="phan-hoi section-padding"data-aos="fade-up">
+        <div class="container">
+            <div class="row">
+                <div class="section-title">
+                    <h2 data-title="Ý kiến">Phản hồi</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="phan-hoi-items">
+                    <div class="phan-hoi-item">
+                        <div class="phan-hoi-item-content">
+                            <div class="phan-hoi-item-img-content-text">
+                                <h2>Mr Tuan Anh</h2>
+                                <span>Travel specialist</span>
+                            </div>
+                            <div class="phan-hoi-item-img-content-text">
+                                <img src="https://images.pexels.com/photos/8112117/pexels-photo-8112117.jpeg?auto=compress&cs=tinysrgb&w=600" alt="...">
+                            </div>
+                        </div>
+                        <div class="phan-hoi-item-text">
+                             <p>Với kinh nghiệm của mình trong lĩnh vực du lịch tôi tin ứng dụng sẽ đem lại cho quý khách hàng những trải nghiệm tuyệt vời</p>
+                        </div>
+                    </div>
+                    <div class="phan-hoi-item">
+                        <div class="phan-hoi-item-content">
+                            <div class="phan-hoi-item-img-content-text">
+                                <h2>Anna</h2>
+                                <span>Travel specialist</span>
+                            </div>
+                            <div class="phan-hoi-item-img-content-text">
+                                <img src="https://images.pexels.com/photos/8111890/pexels-photo-8111890.jpeg?auto=compress&cs=tinysrgb&w=600" alt="...">
+                            </div>
+                        </div>
+                        <div class="phan-hoi-item-text">
+                             <p>Đây sẽ là một trải nghiệm mới cho chúng ta khi đã quá quen với các mạng xã hội như: facebook, tiktok,... tại sao bạn không thử tham gia 1 mạng xã hội chỉ dành riêng cho du lịch? Tôi tin nó sẽ không làm bạn thất vọng.</p>
+                        </div>
+                    </div>
+                    <div class="phan-hoi-item">
+                        <div class="phan-hoi-item-content">
+                            <div class="phan-hoi-item-img-content-text">
+                                <h2>Mr.Vy</h2>
+                                <span>Travel specialist</span>
+                            </div>
+                            <div class="phan-hoi-item-img-content-text">
+                                <img src="https://images.pexels.com/photos/5668774/pexels-photo-5668774.jpeg?auto=compress&cs=tinysrgb&w=600" alt="...">
+                            </div>
+                        </div>
+                        <div class="phan-hoi-item-text">
+                             <p>Thôi nào hãy nhấc máy lên và tải app ngay nào :))</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!--team-->
+    <section class="team section-padding"data-aos="fade-up">
+        <div class="container">
+            <div class="row">
+                <div class="section-title">
+                    <h2 data-title="Customers"></h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="team-items">
+                    <img src="https://images.pexels.com/photos/4245826/pexels-photo-4245826.jpeg?auto=compress&cs=tinysrgb&w=600" aly="..">
+                    <div class="team-items-text">
+                        <h2>Nguyễn Thị Hằng</h2>
+                        <span>Manager</span>
+                    </div>
+                </div>
+                <div class="team-items">
+                    <img src="https://media.istockphoto.com/id/1288538088/vi/anh/ch%C3%A2n-dung-doanh-nh%C3%A2n-tr%E1%BA%BB-th%C3%B4ng-minh-ch%C3%A2u-%C3%A1-nh%C3%ACn-v%C3%A0o-m%C3%A1y-%E1%BA%A3nh-v%C3%A0-n%E1%BB%A5-c%C6%B0%E1%BB%9Di.jpg?b=1&s=612x612&w=0&k=20&c=kf-Z0ja2xBfOrAtCZSGYtWa3alOKPehAk4BRSWYDHio=" aly="..">
+                    <div class="team-items-text">
+                        <h2>Nguyễn Tuấn Anh</h2>
+                        <span>Co-founder</span>
+                    </div>
+                </div>
+                <div class="team-items">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz3ENv1DwbH47NsI8FVbp5x8Xb4RJuBEoFECBkq1i4&s" alt="..">
+                    <div class="team-items-text">
+                        <h2>Mr Vy Tran</h2>
+                        <span>Co-founder</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--footer-->
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-item">
+                    <div class="text">
+                        <h2>Địa chỉ</h2>
+                        <p>Bằng liệt, Hoàng Liệt <br>Hoàng Mai, Hà Nội </p>
+                    </div>
+                </div>
+               
+                <!-- <div class="footer-item">
+                    <div class="text">
+                        <h2>Giờ mở cửa</h2>
+                        <p>9:30 -23:00 <br>All Day</p>
+                    </div>
+                </div> -->
+                <div class="footer-item">
+                    <div class="text">
+                        <h2>Liên hệ</h2>
+                        <p>Phone: 0973999949 </p>
+                        <p> Email: nguyen@abc.com.vn</p>
+                    </div>
+                       
+                </div>
+            </div>
+            <hr style="margin:3% 10%; width:80%"/>
+            <p class="title">@Copyright by HangBakery</p>
+        </div>
+        <img src="https://images.pexels.com/photos/3016353/pexels-photo-3016353.jpeg?auto=compress&cs=tinysrgb&w=600" alt=".." class="img_background_footer">
+    </div>
+  <script>
+    // phím biến đổi menuBar cái icon
+const menuBar=document.querySelector(".menu-bar");  // chọn thằng menu bar 
+menuBar.addEventListener("click",function(){  // click vào menuBar thì thực hiện action 
+ menuBar.classList.toggle("active")  // click vào khởi động class active
+ document.querySelector(".menu-items").classList.toggle("active"); // chọn và gán class active cho nó
+})
+// bắt chuyển động cuộn để active thằng top => tạo hiệu ứng cho header 
+window.addEventListener("scroll", function(){
+ const x = window.pageYOffset; // lấy vị trí theo trục y của elements 
+ const toP =document.querySelector(".top")
+ if(x>80){
+    toP.classList.add("active")
+ }
+ else{
+    toP.classList.remove("active")
+ }
+})
+
+// Phương án mình đưa ra là viết script cho từng phím một => dài 
+const menuTitle = document.querySelector(".menu-title");
+menuTitle.addEventListener("click",function(x){  // truyền vào đối số x là đối tượng click 
+ if(x.target.classList.contains("menu-button")){
+    const Target =x.target.getAttribute("data-title");// lấy giá trị của data-title 
+    
+    menuTitle.querySelector(".active").classList.remove("active")
+    x.target.classList.add("active"); // đối tượng được click vào sẽ đc set active 
+
+    const menuItem =document.querySelector(".menu")
+    menuItem.querySelector(".menu-item-content.active").classList.remove("active");
+    document.getElementById(Target).classList.add("active"); // chonj đối tượng có tên trong data-title để thêm class active 
+ }
+})
+
+  </script>
+   <script>
+    AOS.init();
+</script>
+  </body>
+</html>
