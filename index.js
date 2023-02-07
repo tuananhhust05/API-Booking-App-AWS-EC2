@@ -127,33 +127,33 @@ io.on("connection", (socket) => {
   });
   socket.on("notification",(userId,notificationInfor,additionalInfor)=>{
     //  console.log("Dữ liệu socket truyền lên",userId,notificationInfor,additionalInfor)
-     socket.to(userId).emit("notification",notificationInfor,additionalInfor)
+    io.in(userId).emit("notification",notificationInfor,additionalInfor)
   })
   socket.on("comment",(listUserId,commentInfor,type)=>{
     // console.log("Dữ liệu comment truyền lên",listUserId,commentInfor,type);
     for(let i =0; i<listUserId.length; i++){
-       socket.to(listUserId[i]).emit("comment",commentInfor,type)
+       io.in(listUserId[i]).emit("comment",commentInfor,type)
     }
   })
   socket.on("editcomment",(listUserId,commentInfor,type)=>{
     // console.log("Dữ liệu comment truyền lên",listUserId,commentInfor,type);
     for(let i =0; i<listUserId.length; i++){
-       socket.to(listUserId[i]).emit("editcomment",commentInfor,type)
+       io.in(listUserId[i]).emit("editcomment",commentInfor,type)
     }
   })
   socket.on("deletecomment",(listUserId,commentInfor,type)=>{
     // console.log("Dữ liệu comment truyền lên",listUserId,commentInfor,type);
     for(let i =0; i<listUserId.length; i++){
-       socket.to(listUserId[i]).emit("deletecomment",commentInfor,type)
+       io.in(listUserId[i]).emit("deletecomment",commentInfor,type)
     }
   })
   socket.on("sendMessage",(receiver,mess)=>{
       // console.log("Dữ liệu  truyền lên",receiver,mess);
-       socket.to(receiver).emit("sendMessage",mess)
+       io.in(receiver).emit("sendMessage",mess)
   });
   socket.on("DeleteMessage",(receiver,convId,messId)=>{
     // console.log("Dữ liệu  truyền lên",receiver,mess);
-     socket.to(receiver).emit("DeleteMessage",convId,messId)
+     io.in(receiver).emit("DeleteMessage",convId,messId)
 })
 })
 
