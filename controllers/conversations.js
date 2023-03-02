@@ -1,6 +1,7 @@
 import Conversation from "../models/Conversation.js";
 import User from "../models/User.js";
-
+import mongoose from "mongoose";
+const ObjectId = mongoose.Types.ObjectId;
 
 export const getListConvByUserId = async (req, res, next) => {
   try {
@@ -113,31 +114,64 @@ export const LoadMessage = async (req, res, next) => {
   try {
     console.log(req.body);
     if( req && req.body && req.body.userId && req.body.conversationId){
-      let conv = await Conversation.findOne(
-        {_id:String(req.body.conversationId),"memberList.memberId":String(req.body.userId)},{messageList:1});
-      if(conv){
-        res.json({
-          data:conv.messageList,
-          error:null
-        })
+      if(req.body.isDevide){
+          let countMess = await Conversation.aggregate([
+            {$match:{_id:ObjectId(req.body.conversationId) }},
+            {$project: { count: { $size:"$messageList" }}}
+          ]);
+          let listMess = Number(req.body.loaded) || 0;
+          if(countMess && countMess.length && (countMess.length >0) && countMess[0]._id){
+              let sizeListMess = countMess[0].count -1;
+              if(sizeListMess < 0){
+                sizeListMess=0;
+              }
+              let start = sizeListMess - listMess -15;
+              if(start <0){
+                start = 0;
+              }
+              let conversation = await Conversation.find(
+                {_id:String(req.body.conversationId)},
+                {messageList:{$slice:[start,16]}});
+              res.json({
+                data:conversation[0].messageList,
+                error:null
+              })
+            }
+          else{
+              res.json({
+                data:null,
+                error:"Lấy danh sách tin nhắn không thành công"
+              })
+          }
       }
       else{
-        res.json({
-          data:null,
-          error:"Lấy danh sách tin nhắn không thành công"
-        })
+        let conv = await Conversation.findOne(
+          {_id:String(req.body.conversationId),"memberList.memberId":String(req.body.userId)},{messageList:1});
+        if(conv){
+          res.json({
+            data:conv.messageList,
+            error:null
+          })
+        }
+        else{
+          res.json({
+            data:null,
+            error:"Lấy danh sách tin nhắn không thành công"
+          })
+        }
       }
     }
     else{
       res.json({err:"Truyền thông tin không đầy đủ"})
     }
   } catch (err) {
-    res.json({err:"Đã có lỗi xảy ra"});
     console.log(err)
+    res.json({err:"Đã có lỗi xảy ra"});
     //next(err);
   }
 };
 
+// let conversation = await Conversation.find({_id:Number(req.body.conversationId)},{messageList:{$slice:[start,16]},"memberList.favoriteMessage":1,"memberList.memberId":1})
 export const SendMessage = async (req,res)=>{
    try{
       if(req.body && req.body.messageId && req.body.message && req.body.senderId  && req.body.conversationId && req.body.createAt && req.body.receiverId){
