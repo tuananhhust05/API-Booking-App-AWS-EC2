@@ -33,7 +33,13 @@ const RoomSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    roomNumbers: [{ number: String, unavailableDates: {type: [Date]}}], // 1 mảng gồm các ngày không thể đăng ký
+    roomNumbers: [{ 
+      number: String,
+      countBed: {
+        type: Number,
+        default: 1,
+      },
+      unavailableDates: {type: [Date]}}], // 1 mảng gồm các ngày không thể đăng ký
   },
   { timestamps: true }
 );
