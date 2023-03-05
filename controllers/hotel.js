@@ -8,11 +8,45 @@ import { getLinkPreview } from "link-preview-js";
 let domain ="https://api-booking-app-aws-ec2.onrender.com";
 let domainCheck="//api-booking-app-aws-ec2.onrender.com"
 
+function removeVietnameseTones(str) {
+  if(String(str).trim() != ""){
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+    str = str.replace(/đ/g,"d");
+    str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+    str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+    str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+    str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+    str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+    str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+    str = str.replace(/Đ/g, "D");
+    // Some system encode vietnamese combining accent as individual utf-8 characters
+    // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
+    str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
+    str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
+    // Remove extra spaces
+    // Bỏ các khoảng trắng liền nhau
+    str = str.replace(/ + /g," ");
+    str = str.trim();
+  
+    str = str.replace(/!|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+    return str;
+  }
+  else{
+    return "";
+  }
+}
+
 // tạo khách sạn 
 export const createHotel = async (req, res, next) => {
   const newHotel = new Hotel(req.body);
   try {
     const savedHotel = await newHotel.save();
+    Hotel.updateOne({_id:savedHotel._id},{$set:{hotelNoVn:removeVietnameseTones(hotels[i].name)}}).catch((e)=>{console.log(e)})
     res.status(200).json(savedHotel);
   } catch (err) {
     next(err);
@@ -59,7 +93,7 @@ export const deleteHotel = async (req, res, next) => {
     next(err);
   }
 };
-// lấy dữ liệu khách sạn theo id 
+
 export const getHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
@@ -106,45 +140,41 @@ export const getImgLocationHotel = async (req, res, next) => {
     next(err);
   }
 };
-function removeVietnameseTones(str) {
-  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
-  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
-  str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
-  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
-  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
-  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
-  str = str.replace(/đ/g,"d");
-  str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-  str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-  str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-  str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-  str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-  str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-  str = str.replace(/Đ/g, "D");
-  // Some system encode vietnamese combining accent as individual utf-8 characters
-  // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
-  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
-  str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
-  // Remove extra spaces
-  // Bỏ các khoảng trắng liền nhau
-  str = str.replace(/ + /g," ");
-  str = str.trim();
 
-  str = str.replace(/!|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
-  return str;
-}
-// lấy dữ liệu khách sạn phức tạp 
 export const getHotels = async (req, res, next) => {
   try {
-    const hotels = await Hotel.find({  // tìm kiếm những đối tượng có trường giống như others và có giá nhỏ nhất trong khoảng 1-999
-      cityNoVn:new RegExp(removeVietnameseTones(req.query.city),'i')
-    }).limit(100);  // giới hạn số lượng theo câu query 
+    let cheapestPrice = 200;
+    if(req.query.cheapestPrice && (!isNaN(req.query.cheapestPrice)) && (Number(req.query.cheapestPrice) > 0)){
+      cheapestPrice = Number(req.query.cheapestPrice);
+    }
+    const hotels = await Hotel.find(
+    { 
+      $and:[
+             {cityNoVn:new RegExp(removeVietnameseTones(req.query.city),'i')},
+             {hotelNoVn:new RegExp(removeVietnameseTones(req.query.hotelName || ""),'i')},
+             {cheapestPrice: {$lte: cheapestPrice}}
+          ]
+    }
+    ).limit(100); 
     res.status(200).json(hotels);
   } catch (err) {
     next(err);
   }
 };
-// đếm số lượng khách sản của từng thành phố 
+
+export const AddNameHotelNovn = async (req, res, next) => {
+  try {
+    const hotels = await Hotel.find({},{name:1});
+    for(let i=0; i<hotels.length; i++) {
+       await Hotel.updateOne({_id:hotels[i]._id},{$set:{hotelNoVn:removeVietnameseTones(hotels[i].name)}});
+       console.log('update name hotel novn',hotels[i].name,i)
+    }
+    res.status(200).json("updated succesfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const countByCity = async (req, res, next) => {
   const cities = req.query.cities.split(",");
   try {
@@ -160,7 +190,7 @@ export const countByCity = async (req, res, next) => {
     next(err);
   }
 };
-// đếm số lượng các loại hình 
+
 export const countByType = async (req, res, next) => {
   try {
     const hotelCount = await Hotel.countDocuments({ type: "hotel" });
@@ -515,6 +545,7 @@ export const AcceptHotelRequest = async (req, res,next) => {
           cityNoVn: requestHotel.cityNoVn,
           lat: requestHotel.lat,
           long:requestHotel.long,
+          hotelNoVn:removeVietnameseTones(requestHotel.name)
         }
         let newHotel = new Hotel(dataInsert);
         newHotel.save().catch((e)=>{

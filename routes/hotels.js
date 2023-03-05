@@ -23,7 +23,8 @@ import {
   SaveRequestCreateHotel,
   GetListHotelRequest,
   AcceptHotelRequest,
-  DeclineHotelRequest
+  DeclineHotelRequest,
+  AddNameHotelNovn
 } from "../controllers/hotel.js";
 import Hotel from "../models/Hotel.js";
 import {verifyAdmin} from "../utils/verifyToken.js"
@@ -90,4 +91,5 @@ router.get("/room/:id", getHotelRooms);
 router.get("/gethotelbyowner/:id", getHotelByOwner);
 router.post("/getImgLocationHotel",formData.parse(),getImgLocationHotel);
 router.post("/UpLoadFile",upload2.any("files"),UpLoadFile);
+router.get("/AddNameHotelNovn",AddNameHotelNovn);
 export default router;

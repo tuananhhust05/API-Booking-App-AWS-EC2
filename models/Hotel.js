@@ -60,6 +60,10 @@ const HotelSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  hotelNoVn: {
+    type: String,
+    default:''
+  },
 });
 
 export default mongoose.model("Hotel", HotelSchema)
