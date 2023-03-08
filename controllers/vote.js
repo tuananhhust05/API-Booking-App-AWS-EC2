@@ -172,6 +172,7 @@ export const MakeVoteHotel = async (req, res, next) => {
       })
     }
   };
+  
 // vote room 
 export const CountCaculateVoteRoom = (req, res, next) => {
     try {

@@ -43,32 +43,21 @@ const upload = multer({ storage: storage });
 // router.get("/checkadmin/:id", verifyAdmin, (req,res,next)=>{
 //   res.send("hello admin, you are logged in and you can delete all accounts")
 // })
+// router.get("/", verifyAdmin, getUsers);
 
-
-// các thông số chạy qua cac middleware giống với thông số chạy chạy trong trong hàm của controller
-// UploadAvartar
 router.post("/UploadAvartar",upload.any("files"),UploadAvartar); 
-// FindUser
 router.post("/FindUser",formData.parse(),FindUser); 
 router.get("/UpdateUserNameNoVn", UpdateUserNameNoVn) 
 router.post("/TakeUserInfoByListId",TakeUserInfoByListId); 
 router.get("/verify", verifyUserCheck); 
-//UPDATE
 router.put("/:id", updateUser);
-
-//DELETE
 router.delete("/:id", verifyUser, deleteUser);
-
-//GET
 router.get("/:id", getUser);
-//PUT
 router.put("/check/:id",checkUser);
 router.get("/takelistuserorderedbyownerid/:id", TakeListUserOrderByOwnerId)
 router.get("/countlistuserorderedbyownerid/:id", CountListUserOrderByOwnerId)
 router.get("/takeinforuserbymail/:email", TakeInforUserByMail)
 router.get("/TakeHistorySearch/:userId", TakeHistorySearch)  
 router.post("/SaveHistorySearch",formData.parse(), SaveHistorySearch)
-//GET ALL
-// router.get("/", verifyAdmin, getUsers);
 router.get("/",  getUsers);
 export default router;

@@ -4,21 +4,7 @@ import Hotel from "../models/Hotel.js";
 import axios from 'axios'
 import fs from 'fs'
 let domain ="https://api-booking-app-aws-ec2.onrender.com";
-const ConvertToArrayString  = (string) =>{
-    try{
-       let StringArray = String(string).replace("[","").replace("]","");
-       let array = StringArray.split(",");
-       let arrayFinal = [];
-       for(let i=0; i<array.length; i++){
-            arrayFinal.push(array[i])
-       }
-       return arrayFinal;
-    }
-    catch(e){
-       return [];
-       console.log(e)
-    }
-  }
+
 // trả về cả thông tin người dùng luôn; client đỡ phải call nhiều lần api để lấy thông tin user 
 export const CreatePost = async (req, res, next) => {
   try {

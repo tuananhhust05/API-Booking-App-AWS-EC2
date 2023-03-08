@@ -26,11 +26,9 @@ import {
   DeclineHotelRequest,
   AddNameHotelNovn
 } from "../controllers/hotel.js";
-import Hotel from "../models/Hotel.js";
 import {verifyAdmin} from "../utils/verifyToken.js"
 const router = express.Router();
 
-// config upload img 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/images/hotels")
@@ -50,27 +48,17 @@ let storage2 = multer.diskStorage({
   },
 })
 const upload2 = multer({ storage: storage2 });
-// DeclineHotelRequest
 router.post("/DeclineHotelRequest",formData.parse(),DeclineHotelRequest);
-// AcceptHotelRequest
 router.post("/AcceptHotelRequest",formData.parse(), AcceptHotelRequest);
-//GetListHotelRequest
 router.post("/GetListHotelRequest",formData.parse(), GetListHotelRequest);
-// SaveRequestCreateHotel
 router.post("/SaveRequestCreateHotel", SaveRequestCreateHotel);
-// TakeHotelRecommend
 router.get("/TakeHotelRecommend/:userId",TakeHotelRecommend);
-// TakeListHotelInCity
 router.post("/TakeListHotelInCity", TakeListHotelInCity);
-// TakeDataCity
 router.post("/TakeDataCity",TakeDataCity);
-// GetListCityBySortCountHotel
 router.get("/GetListCityBySortCountHotel",GetListCityBySortCountHotel);
-// DeleteFile
 router.post("/DeleteFile",formData.parse(), DeleteFile);
 //CREATE
-router.post("/", verifyAdmin, createHotel); // nếu là admin mới cho tạo khách sạn 
-
+router.post("/", verifyAdmin, createHotel); 
 // IMAGE
 router.post("/update/imghotel",upload.any("files"),uploadFilesImgHotel);
 router.post("/update/DeleteImgHotel",formData.parse(),DeleteImgHotel);
@@ -82,7 +70,6 @@ router.delete("/:id", verifyAdmin, deleteHotel);
 //GET
 router.get("/find/:id", getHotel);
 //GET ALL
-
 router.get("/", getHotels); // lấy 4 khách sạn thỏa mãn query 
 
 router.get("/countByCity", countByCity);

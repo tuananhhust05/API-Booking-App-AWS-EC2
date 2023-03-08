@@ -21,8 +21,8 @@ const CommentsSchema = new mongoose.Schema(
       default :""
     },
   },
-  { collection: 'Comments',  // cài đặt tên cho conversations kết nối đến 
-    versionKey: false   // loai bo version key  
+  { collection: 'Comments',  
+    versionKey: false  
    }    
 );
 

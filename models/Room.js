@@ -34,12 +34,19 @@ const RoomSchema = new mongoose.Schema(
       default: "",
     },
     roomNumbers: [{ 
-      number: String,
+      number:  {
+        type: String,
+        require:true
+      },
       countBed: {
         type: Number,
         default: 1,
       },
-      unavailableDates: {type: [Date]}}], // 1 mảng gồm các ngày không thể đăng ký
+      unavailableDates: {
+        type: [Date],
+        default:[]
+      }
+    }], // 1 mảng gồm các ngày không thể đăng ký
   },
   { timestamps: true }
 );

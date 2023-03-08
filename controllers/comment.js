@@ -4,11 +4,9 @@ import CommentPersonalPage from "../models/CommentPersonalPage.js";
 import CommentPost from "../models/CommentPost.js";
 import User from "../models/User.js";
 
-// xử lý mảng unique 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
-// trả về cả thông tin người dùng luôn; client đỡ phải call nhiều lần api để lấy thông tin user 
 export const TakeCommentByHotelId = (req, res, next) => {
   try {
     if(req.params && req.params.hotelId){
@@ -139,7 +137,7 @@ export const EditCommentHotel= async (req, res, next) => {
             a.userId= updatedComment.userId;
             a.imgUser = ele[0].img;
             a.username = ele[0].username;
-            res.json({
+            return res.json({
               data:a,
               err:null
             })
@@ -147,7 +145,7 @@ export const EditCommentHotel= async (req, res, next) => {
           else{
             let deleteComment = await Comment.deleteOne({_id:String(updatedComment._id)});
             if(deleteComment){
-              res.json({
+              return res.json({
                 data:null,
                 err:"Bình luận không hợp lệ"
               })
@@ -157,14 +155,14 @@ export const EditCommentHotel= async (req, res, next) => {
       }
     }
     else{
-      res.json({
+      return res.json({
         data:null,
         err:"Thông tin truyền lên không đầy đủ"
       })
     }
   } catch (err) {
     console.log(err)
-    res.json({
+    return res.json({
       data:null,
       err:"Đã có lỗi xảy ra"
     })
@@ -177,21 +175,21 @@ export const DeleteCommentHotel= async (req, res, next) => {
     ){
       const deletedComment = await Comment.deleteOne({_id:String(req.body.IdComment)})
       if(deletedComment){
-        res.json({
+        return res.json({
           data:req.body.IdComment,
           err:null
         })
       }
     }
     else{
-      res.json({
+      return res.json({
         data:null,
         err:"Thông tin truyền lên không đầy đủ"
       })
     }
   } catch (err) {
     console.log(err)
-    res.json({
+    return res.json({
       data:null,
       err:"Đã có lỗi xảy ra"
     })
@@ -216,7 +214,7 @@ export const LikeDislikeCommentHotel = async (req, res, next) => {
               { new: true }
             );
             if(updatedLikeCommentHotel){
-                res.status(200).json({
+                return res.status(200).json({
                   data:{
                     result:true,
                     message:"Like thành công",
@@ -234,7 +232,7 @@ export const LikeDislikeCommentHotel = async (req, res, next) => {
             { new: true }
           );
           if(updatedDisLikeCommentHotel){
-            res.status(200).json({
+            return res.status(200).json({
               data:{
                 result:true,
                 message:"DisLike thành công",
@@ -246,14 +244,14 @@ export const LikeDislikeCommentHotel = async (req, res, next) => {
         }
     }
     else{
-      res.json({
+      return res.json({
         data:null,
         err:"Thông tin truyền lên không đầy đủ"
       })
     }
   } catch (err) {
     console.log(err)
-    res.json({
+    return res.json({
       data:null,
       err:"Đã có lỗi xảy ra"
     })
@@ -290,21 +288,21 @@ export const TakeCommentByRoomIdHotelId = async (req, res, next) => {
            }
        }
        if(ListComment){
-          res.json({
+          return res.json({
             data:ListCommentFinal,
             err: null 
           })
        }
     }
     else{
-      res.json({
+      return res.json({
         data:null,
         err:"Thông tin truyền lên không đầy đủ"
       })
     }
   } catch (err) {
     console.log(err)
-    res.json({
+    return res.json({
       data:null,
       err:"Đã có lỗi xảy ra"
     })
@@ -341,7 +339,7 @@ export const CommentRoom  = async (req, res, next) => {
               a.roomId= savedComment.roomId;
               a.imgUser = ele[0].img;
               a.username = ele[0].username;
-              res.json({
+              return res.json({
                 data:a,
                 err:null
               })
@@ -349,7 +347,7 @@ export const CommentRoom  = async (req, res, next) => {
             else{
               let deleteComment = await CommentsRoom.deleteOne({_id:String(savedComment._id)});
               if(deleteComment){
-                res.json({
+                return res.json({
                   data:null,
                   err:"Bình luận không hợp lệ"
                 })
@@ -359,14 +357,14 @@ export const CommentRoom  = async (req, res, next) => {
         }
     }
     else{
-      res.json({
+      return res.json({
         data:null,
         err:"Thông tin truyền lên không đầy đủ"
       })
     }
   } catch (err) {
     console.log(err)
-    res.json({
+    return res.json({
       data:null,
       err:"Đã có lỗi xảy ra"
     })

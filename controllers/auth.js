@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import OtpAccount from "../models/OtpAccount.js";
 import bcrypt from "bcryptjs";
 import { createError } from "../utils/error.js";
 import jwt from "jsonwebtoken";
@@ -19,20 +20,22 @@ function removeVietnameseTones(str) {
   str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
   str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
   str = str.replace(/Đ/g, "D");
-  // Some system encode vietnamese combining accent as individual utf-8 characters
-  // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
-  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
-  str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
-  // Remove extra spaces
-  // Bỏ các khoảng trắng liền nhau
+  str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); 
+  str = str.replace(/\u02C6|\u0306|\u031B/g, "");
   str = str.replace(/ + /g," ");
   str = str.trim();
-
   str = str.replace(/!|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|{|}|\||\\/g," ");
   return str;
 }
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 export const register = async (req, res, next) => {
-  console.log("Đăng ký",req.body)
+  // console.log("Đăng ký",req.body)
   try {
     if( req && req.body && req.body.username && req.body.email && req.body.password){
       const salt = bcrypt.genSaltSync(10);
@@ -45,25 +48,25 @@ export const register = async (req, res, next) => {
           password: hash,
           userNameNoVn:removeVietnameseTones(req.body.username||"")
         });
-        const savedUser = await newUser.save(); // nếu trùng sẽ bị đứng code 
+        const savedUser = await newUser.save(); 
         if(savedUser){
-           res.json({success:true})
+          return res.json({success:true})
         }
       }
       else{
         console.log("Trùng tài khoản")
-        res.json({err:"Đã có tài khoản đăng ký với tên này"})
+        return res.json({err:"Đã có tài khoản đăng ký với tên này"})
       }
     }
     else{
-      res.json({err:"Truyền thông tin không đầy đủ"})
+      return res.json({err:"Truyền thông tin không đầy đủ"})
     }
   } catch (err) {
-    res.json({err:"Đã có lỗi xảy ra"});
     console.log(err)
-    //next(err);
+    return res.json({err:"Đã có lỗi xảy ra"});
   }
 };
+
 export const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.username });
@@ -172,9 +175,9 @@ export const registeradmin = async (req, res, next) => {
           userNameNoVn:removeVietnameseTones(req.body.username||""),
           isAdmin:true,
         });
-        const savedUser = await newUser.save(); // nếu trùng sẽ bị đứng code 
+        const savedUser = await newUser.save();  
         if(savedUser){
-           res.json({success:true})
+          return res.json({success:true})
         }
       }
       else{
@@ -186,22 +189,73 @@ export const registeradmin = async (req, res, next) => {
           User.updateOne({_id:check[0]._id},{$set:{isAdmin:true}}).catch((e)=>{
             console.log(e);
           });
-          res.json({
+          return res.json({
             success:true,
             data:"Upgrade successfully"
           })
         }
         else{
-          res.json({err:"Account is exist"})
+          return res.json({err:"Account is exist"})
         }
       }
     }
     else{
-      res.json({err:"Truyền thông tin không đầy đủ"})
+      return res.json({err:"Truyền thông tin không đầy đủ"})
     }
   } catch (err) {
-    res.json({err:"Đã có lỗi xảy ra"});
     console.log(err)
-    //next(err);
+    return res.json({err:"Đã có lỗi xảy ra"});
+  }
+};
+
+export const RegisterOtpMail = async (req, res, next) => {
+  try {
+    if(req.body && req.body.email){
+        let a = getRandomInt(100000,999999);
+        let checkMailExist = await OtpAccount.find({email:req.body.email});
+        if(checkMailExist.length  && (checkMailExist.length >0) ){
+            await OtpAccount.updateOne({email:req.body.email},{$set:{otp:a}});
+        }
+        else{
+            let newOtp = new OtpAccount({
+              email: req.body.email,
+              otp:a
+            });
+            await newOtp.save();
+        }
+        return res.json({
+          data:"Register successfully"
+        });
+    }
+    else{
+       return res.json({err:"Truyền thông tin không đầy đủ"})
+    }
+    
+  } catch (err) {
+    console.log(err)
+    next(err);
+  }
+};
+
+export const VerifyOtpMail = async (req, res, next) => {
+  try {
+    if(req.body && req.body.email && req.body.otp){
+        let a = getRandomInt(100000,999999);
+        let checkMailExist = await OtpAccount.find({email:req.body.email,otp:Number(req.body.otp)});
+        if(checkMailExist.length && (checkMailExist.length >0)){
+           // update password 
+           return res.json({data:"Verify successfully"});
+        }
+        else{
+           return res.json({err:"Verify Failed"});
+        }
+    }
+    else{
+       return res.json({err:"Truyền thông tin không đầy đủ"})
+    }
+    
+  } catch (err) {
+    console.log(err)
+    next(err);
   }
 };

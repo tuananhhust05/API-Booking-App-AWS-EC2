@@ -479,3 +479,84 @@ export const DeclineRoomRequest = async (req, res,next) => {
     next(err);
   }
 }
+
+// must have token and verify it. 
+export const AddRoomNumber = async (req, res,next) => {
+  try {
+    if(req.body && req.body.IdCategory && req.body.roomNumber && req.body.countBed
+       && (!isNaN(req.body.countBed) && (Number(req.body.countBed) > 0))
+      ){
+      let category = await Room.findOne({_id:String(req.body.IdCategory)},{"roomNumbers.number":1});
+      if(category){
+          if(category.roomNumbers.find((e)=> String(e.number) === String(req.body.roomNumber))){
+              return res.status(200).json({
+                error:"Invalid roomNumber"
+              });
+          }
+          else{
+              await Room.updateOne({_id:req.body.IdCategory},{$push:{
+                roomNumbers:{
+                  number:req.body.roomNumber,
+                  countBed:Number(req.body.countBed)
+                }
+              }});
+              return res.status(200).json({
+                data: "Added RoomNumber successfully",
+              });
+          }
+      }
+      else{
+        return res.status(200).json({
+          error:"Can not find category"
+        });
+      }
+    }
+    else{
+      return res.status(200).json({
+        error:"Invalid Input"
+      });
+    }
+  } catch (err) {
+    console.log(err)
+    next(err);
+  }
+}
+
+export const DeleteRoomNumber = async (req, res,next) => {
+  try {
+    if(req.body && req.body.IdCategory && req.body.roomNumber){
+      let category = await Room.findOne({_id:String(req.body.IdCategory),"roomNumbers.number":req.body.roomNumber},{"roomNumbers.number":1});
+      if(category){
+          if(category.roomNumbers.find((e)=> String(e.number) === String(req.body.roomNumber))){
+              await Room.updateOne({_id:req.body.IdCategory},{$pull:{
+                roomNumbers:{
+                  number:req.body.roomNumber
+                }
+              }});
+              return res.status(200).json({
+                data: "Removed RoomNumber successfully",
+              });
+          }
+          else{
+              return res.status(200).json({
+                error:"Invalid roomNumber"
+              });
+          }
+      }
+      else{
+        return res.status(200).json({
+          error:"Can not find category"
+        });
+      }
+    }
+    else{
+      return res.status(200).json({
+        error:"Invalid Input"
+      });
+    }
+  } catch (err) {
+    console.log(err)
+    next(err);
+  }
+}
+

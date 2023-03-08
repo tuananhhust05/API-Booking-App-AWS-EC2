@@ -72,7 +72,7 @@ export const getListConvByUserId = async (req, res, next) => {
           return 0;
         });
         if( ListConv){
-            res.json({
+            return res.json({
                 data: listConvFinal,
                 error:null
             })
@@ -90,9 +90,9 @@ export const getListConvByUserId = async (req, res, next) => {
 
 export const ReadMessage = async (req, res, next) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     if( req && req.body && req.body.userId && req.body.conversationId){
-      let update = await Conversation.updateOne(
+      await Conversation.updateOne(
         {_id:String(req.body.conversationId),"memberList.memberId":String(req.body.userId)},
         {$set:{"memberList.$.unReader":0}});
       res.json({
@@ -112,7 +112,7 @@ export const ReadMessage = async (req, res, next) => {
 
 export const LoadMessage = async (req, res, next) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     if( req && req.body && req.body.userId && req.body.conversationId){
       if(req.body.isDevide){
           let countMess = await Conversation.aggregate([
@@ -132,13 +132,13 @@ export const LoadMessage = async (req, res, next) => {
               let conversation = await Conversation.find(
                 {_id:String(req.body.conversationId)},
                 {messageList:{$slice:[start,16]}});
-              res.json({
+              return res.json({
                 data:conversation[0].messageList,
                 error:null
               })
             }
           else{
-              res.json({
+              return res.json({
                 data:null,
                 error:"Lấy danh sách tin nhắn không thành công"
               })
@@ -148,13 +148,13 @@ export const LoadMessage = async (req, res, next) => {
         let conv = await Conversation.findOne(
           {_id:String(req.body.conversationId),"memberList.memberId":String(req.body.userId)},{messageList:1});
         if(conv){
-          res.json({
+          return res.json({
             data:conv.messageList,
             error:null
           })
         }
         else{
-          res.json({
+          return res.json({
             data:null,
             error:"Lấy danh sách tin nhắn không thành công"
           })
@@ -162,16 +162,15 @@ export const LoadMessage = async (req, res, next) => {
       }
     }
     else{
-      res.json({err:"Truyền thông tin không đầy đủ"})
+      return res.json({err:"Truyền thông tin không đầy đủ"})
     }
   } catch (err) {
     console.log(err)
-    res.json({err:"Đã có lỗi xảy ra"});
+    return res.json({err:"Đã có lỗi xảy ra"});
     //next(err);
   }
 };
 
-// let conversation = await Conversation.find({_id:Number(req.body.conversationId)},{messageList:{$slice:[start,16]},"memberList.favoriteMessage":1,"memberList.memberId":1})
 export const SendMessage = async (req,res)=>{
    try{
       if(req.body && req.body.messageId && req.body.message && req.body.senderId  && req.body.conversationId && req.body.createAt && req.body.receiverId){
@@ -219,7 +218,7 @@ export const DeleteMessage = async (req,res)=>{
         }).catch(function (err) {
            console.log(err);
          });
-         res.json({
+         return res.json({
             data:req.params.messageId,
             error:"Xóa tin nhắn thành công"
          })

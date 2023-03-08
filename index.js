@@ -34,7 +34,7 @@ mongoose.connection.on("disconnected", () => {
   });
 
 //middlewares
-app.use(cors()) // cho phép truy cập từ mọi client 
+app.use(cors())
 app.use(cookieParser())
 app.use(express.json());
 
@@ -101,6 +101,7 @@ const Login = (userId,socketId)=>{
     console.log(e)
   }
 }
+
 const Logout = (socketId)=>{
   try{
      let index = listUser.findIndex((e)=> e.socketArray.includes(socketId));
@@ -115,12 +116,13 @@ const Logout = (socketId)=>{
      console.log(e)
   }
 }
+
 io.on("connection", (socket) => {
   socket.on("login",(userId)=>{
     if(Login(userId,socket.id) == 1){
        socket.join(userId);
     };
-    console.log(listUser)
+    // console.log(listUser)
   })
   socket.on("disconnect",()=>{
      Logout(socket.id)
