@@ -245,7 +245,7 @@ function toMonthName(monthNumber) {
 export const TakeInComeSixMonthLatest = async (req, res, next) => {
   try {
       if(req.params && req.params.id){
-        let monthstart = new Date().getMonth()+1;
+        let monthstart = new Date().getMonth()+3; // edit fo gain true data
         let month ="";
         if(monthstart<10){
             month =`0${monthstart}`
@@ -269,6 +269,7 @@ export const TakeInComeSixMonthLatest = async (req, res, next) => {
         }
         arrayTime.push(timetempt)
       }
+      // console.log(arrayTime)
       for(let i=0; i<arrayTime.length-1; i++){
         let sum = await Order.aggregate([
           { $match: 

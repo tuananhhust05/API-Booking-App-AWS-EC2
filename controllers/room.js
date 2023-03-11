@@ -375,11 +375,12 @@ export const GetArrayDayUnAvailabilityRoomNumber = async (req, res, next) => {
   }
 };
 
+// just focus take money base on order 
 export const CreateRoomRequest = async (req, res, next) => {
   try {
     console.log(req.body)
     if(req.body){
-        let newRequest = new RoomCreateRequest(req.body);
+        let newRequest = new Room(req.body);
         newRequest.save().catch((e)=>{
            console.log(e)
         })
@@ -525,9 +526,12 @@ export const AddRoomNumber = async (req, res,next) => {
 export const DeleteRoomNumber = async (req, res,next) => {
   try {
     if(req.body && req.body.IdCategory && req.body.roomNumber){
+      // check and decode jwt token 
       let category = await Room.findOne({_id:String(req.body.IdCategory),"roomNumbers.number":req.body.roomNumber},{"roomNumbers.number":1});
       if(category){
           if(category.roomNumbers.find((e)=> String(e.number) === String(req.body.roomNumber))){
+              // check permission user 
+              // check order exist => if(true) => stop deleting room
               await Room.updateOne({_id:req.body.IdCategory},{$pull:{
                 roomNumbers:{
                   number:req.body.roomNumber
