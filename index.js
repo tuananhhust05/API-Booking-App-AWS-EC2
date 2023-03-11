@@ -37,7 +37,10 @@ mongoose.connection.on("disconnected", () => {
 app.use(cors())
 app.use(cookieParser())
 app.use(express.json());
-
+app.set('view engine', 'ejs');
+app.get('/', function(req, res) {
+  res.render('index');
+});
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/hotels", hotelsRoute);
